@@ -1,0 +1,23 @@
+title Onboarding
+
+actor User
+participant UI
+participant utilityFunctions
+participant State Magement
+participant API
+
+
+User->UI: click signUp button
+alt if email and passwrod is valid 
+    UI->utilityFunctions: call checkEmailAndPassword()
+    utilityFunctions-->UI: true
+    UI->State Magement: signUpThisUser(USERDATA)
+    State Magement->API: Auth.signUpUser()
+    API -->State Magement: userData
+    State Magement -->UI: userData
+    UI ->UI: sendToNextScreen
+else if email and passwrod is not valid 
+    utilityFunctions-->UI: false
+    UI ->UI: showError]
+    
+end
