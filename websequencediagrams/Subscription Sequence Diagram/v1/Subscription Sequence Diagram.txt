@@ -1,0 +1,29 @@
+title Subscription Sequence Diagram
+
+actor User
+participant UI
+participant State Mangement
+participant Utility Function
+participant API
+
+
+User -> UI: go to Subscription Screen
+UI -> State Mangement: UI.getSubscriptionData()
+State Mangement -> API: API.getSubscriptionData()
+API --> State Mangement:  SubscriptionData
+State Mangement --> UI:  SubscriptionData
+UI --> UI: render Subscription Screen \n with SubscriptionData
+
+User -> UI:Select Subscription Plan
+UI -> State Mangement: getInvoiceDataFor(selectedPlanData)
+State Mangement --> UI: InvoiceData
+UI--> UI: send to invoice screen with InvoiceData
+User ->UI: User See Invoice of Selected Plan \n and continue
+UI -->UI: on continue send to payment Screen \n with(selectedPlanData & Email)
+
+
+alt need more info on payment section
+User -> UI: enter payment info and pay
+end
+
+UI --> UI: on payment complete send to \n profile creation or dashboard screen

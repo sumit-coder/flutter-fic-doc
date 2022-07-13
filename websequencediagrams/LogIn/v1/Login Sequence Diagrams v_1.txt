@@ -1,0 +1,44 @@
+title Login Sequence Diagram
+
+
+actor User
+participant UI
+participant State Magement
+participant Utility Function
+participant API
+participant Server
+
+
+User -> UI: click signIn Button 
+UI -> State Magement: checkUserCredentials(loginData)
+
+
+
+State Magement->Utility Function: isEmailPasswordValid(LoginData)
+
+alt if email and password is vaild
+    
+    Utility Function --> State Magement: True
+    State Magement -> API: loginUser(loginData)
+    
+else if email and password is not vaild
+
+    Utility Function-->State Magement: False
+    State Magement --> UI:Show error message
+end
+
+API -> Server: checkLoginData(POST)
+
+alt if users login data is correct
+
+    Server --> API: UserData(JSON)
+    API --> State Magement: UserData(JSON)
+    State Magement --> State Magement: Send to next screen
+    
+else if user login data is not correct
+
+    Server --> API: empty(JSON) or error code
+    API --> State Magement: UserData or Error Code
+    State Magement -->UI: Show error message
+end 
+

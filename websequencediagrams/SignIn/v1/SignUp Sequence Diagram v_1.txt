@@ -1,0 +1,64 @@
+title SignUp Sequence Diagram
+
+
+actor User
+participant UI
+participant State Magement
+participant Utility Function
+participant API
+participant Server
+
+User->UI:Enter Email
+User -> UI: click SignUp Button 
+UI -> State Magement: checkUserEmail(userEmail)
+
+
+
+State Magement->Utility Function: isEmailValid(userEmail)
+
+alt if email is valid
+    
+    Utility Function --> State Magement:  True
+    State Magement -> API: sendOtp(userEmail)
+    
+else if email is not valid
+
+    Utility Function-->State Magement: False
+    State Magement --> UI:Show error message
+end
+
+API -> Server: API.sendOtpToEmail(POST with userEmail) 
+API --> State Magement: send to next screen
+State Magement -->UI: send to verifyOtp screen
+User->UI:Enter OTP
+User->UI:click verifyOtp button
+UI -> State Magement:verifyOtp(entered Otp)
+State Magement -> API: verifyOtp(entered Otp)
+API -> Server: API.verifyOtp(POST with entered Otp)
+
+
+alt if entered is correct or true
+    Server --> API: true
+    API --> State Magement: otp is true
+    State Magement --> UI: send to set password screen
+    
+else if entered is not correct or false
+    Server --> API: false
+    API --> State Magement: otp is false
+    State Magement --> UI: Error[ entered otp is wrong ]
+end
+
+User -> UI:Enter Password
+User -> UI:click set password button
+UI -> State Magement: setPassword(enteredPassword)
+State Magement -> API: setPassword(enteredPassword with userEmail)
+API -> Server: API.setPassword(POST - Password with userEmail)
+
+Server --> API: userData JSON
+API --> State Magement: UserData
+State Magement --> UI: send To Next Screen 
+UI --> UI: send To Dashboard or Buy Subscription screen 
+
+
+
+

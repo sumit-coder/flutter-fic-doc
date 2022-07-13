@@ -1,0 +1,115 @@
+title SignIn to Show Video Sequence Diagram
+
+
+actor User
+participant UI
+participant State Mangement
+participant Utility Function
+participant API
+participant Server
+
+User->UI:Enter Email
+User -> UI: click SignUp Button 
+UI -> State Mangement: checkUserEmail(userEmail)
+
+
+
+State Mangement->Utility Function: isEmailValid(userEmail)
+
+alt if email is valid
+    
+    Utility Function --> State Mangement:  True
+    State Mangement -> API: sendOtp(userEmail)
+    
+else if email is not valid
+
+    Utility Function-->State Mangement: False
+    State Mangement --> UI:Show error message
+end
+
+API -> Server: API.sendOtpToEmail \n (POST with userEmail) 
+API --> State Mangement: send to next screen
+State Mangement -->UI: send to verifyOtp screen
+User->UI:Enter OTP
+User->UI:click verifyOtp button
+UI -> State Mangement:verifyOtp(entered Otp)
+State Mangement -> API: verifyOtp(entered Otp)
+API -> Server: API.verifyOtp \n (POST with entered Otp)
+
+
+alt if entered is correct or true
+    Server --> API: true
+    API --> State Mangement: otp is true
+    State Mangement --> UI: send to set password screen
+    
+else if entered is not correct or false
+    Server --> API: false
+    API --> State Mangement: otp is false
+    State Mangement --> UI: Error[ entered otp is wrong ]
+end
+
+User -> UI:Enter Password
+User -> UI:click set password button
+UI -> State Mangement: setPassword(enteredPassword)
+State Mangement -> API: setPassword \n (enteredPassword with userEmail)
+API -> Server: API.setPassword \n (POST - Password with userEmail)
+
+Server --> API: userData JSON
+API --> State Mangement: UserData
+State Mangement --> UI: send To Subscription or Dashboard Screen** 
+
+alt if User not skip to Dashboard (then Subscription Screen Flow)
+    UI->State Mangement: [UI] getSubscriptionData
+    State Mangement -> API:getSubscriptionData
+    API--> State Mangement:SubscriptionData
+    State Mangement--> UI:SubscriptionData
+    UI --> UI: render Subscription screen according \n to SubscriptionData 
+    User -> UI:Select Subscription Plan
+    UI -> State Mangement: getInvoiceDataFor(selectedPlanData)
+    State Mangement --> UI: InvoiceData
+    UI--> UI: send to invoice screen with InvoiceData
+    User ->UI: User See Invoice of Selected Plan \n and continue
+    UI -->UI: on continue send to payment \n Screen with(selectedPlanData)
+else if User skip to Dashboard
+    UI --> UI: send To Dashboard screen 
+end
+
+User -> UI: go to dashboard screen
+UI -> State Mangement: UI.getDashboardScreenData
+State Mangement -> API: getDashboardScreenContent(userData)
+API --> State Mangement: dashboardContent according to user type
+State Mangement --> UI: dashboardContent
+UI --> UI: render Dashboard screen \n according to dashboardContent
+
+
+User -> UI: select Series to watch
+UI -> State Mangement: getDataForSelectedSeries(SeriesData)
+
+alt this call can be removed
+    State Mangement -> API: API.getSeriesData(SeriesId or SeriesInfo) 
+    API --> State Mangement: SeriesData
+end
+
+State Mangement --> UI: send to next screen with SeriesData
+UI --> UI: render single Series screen using SeriesData
+
+User -> UI:click on video to play 
+UI -> State Mangement: getVideoData(videoID,SeriesData)
+State Mangement --> UI: videoData and SeriesData
+
+UI-->UI: render Video Player screen using \n videoData and SeriesData
+
+User -> UI: click playButton
+UI-->UI: Play Video
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

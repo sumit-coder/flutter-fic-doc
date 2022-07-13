@@ -1,0 +1,36 @@
+title Dashboard to Play Video
+
+actor User
+participant UI
+participant State Magement
+participant Utility Function
+participant API
+
+ 
+User -> UI: go to dashboard screen
+UI -> State Magement: UI.getDashboardScreenData
+State Magement -> API: getDashboardScreenContent(userData)
+API --> State Magement: dashboardContent according to user type
+State Magement --> UI: dashboardContent
+UI --> UI: render Dashboard screen \n according to dashboardContent
+
+
+User -> UI: select Series to watch
+UI -> State Magement: getDataForSelectedSeries(SeriesData)
+
+alt this call can be removed
+    State Magement -> API: API.getSeriesData(SeriesId or SeriesInfo) 
+    API --> State Magement: SeriesData
+end
+
+State Magement --> UI: send to next screen with SeriesData
+UI --> UI: render single Series screen using SeriesData
+
+User -> UI:click on video to play 
+UI -> State Magement: getVideoData(videoID,SeriesData)
+State Magement --> UI: videoData and SeriesData
+
+UI-->UI: render Video Player screen using \n videoData and SeriesData
+
+User -> UI: click playButton
+UI-->UI: Play Video
